@@ -1,0 +1,972 @@
+
+[root@puppetselfcontained ~]# sudo yum remove docker \
+>                   docker-client \
+>                   docker-client-latest \
+>                   docker-common \
+>                   docker-latest \
+>                   docker-latest-logrotate \
+>                   docker-logrotate \
+>                   docker-engine
+Loaded plugins: fastestmirror
+No Match for argument: docker
+No Match for argument: docker-client
+No Match for argument: docker-client-latest
+No Match for argument: docker-common
+No Match for argument: docker-latest
+No Match for argument: docker-latest-logrotate
+No Match for argument: docker-logrotate
+No Match for argument: docker-engine
+No Packages marked for removal
+
+
+[root@localhost ~]# curl -fsSL https://get.docker.com -o get-docker.sh
+
+
+[root@localhost ~]# sudo sh get-docker.sh
+# Executing docker install script, commit: 7cae5f8b0decc17d6571f9f52eb840fbc13b2737
++ sh -c 'yum install -y -q yum-utils'
+Delta RPMs disabled because /usr/bin/applydeltarpm not installed.
++ sh -c 'yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo'
+Loaded plugins: fastestmirror
+adding repo from: https://download.docker.com/linux/centos/docker-ce.repo
+grabbing file https://download.docker.com/linux/centos/docker-ce.repo to /etc/yum.repos.d/docker-ce.repo
+repo saved to /etc/yum.repos.d/docker-ce.repo
++ '[' stable '!=' stable ']'
++ sh -c 'yum makecache'
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirrors.piconets.webwerks.in
+ * extras: mirrors.piconets.webwerks.in
+ * updates: mirrors.piconets.webwerks.in
+base                                                                                                                                  | 3.6 kB  00:00:00
+docker-ce-stable                                                                                                                      | 3.5 kB  00:00:00
+extras                                                                                                                                | 2.9 kB  00:00:00
+updates                                                                                                                               | 2.9 kB  00:00:00
+(1/7): base/7/x86_64/other_db                                                                                                         | 2.6 MB  00:00:00
+(2/7): docker-ce-stable/7/x86_64/updateinfo                                                                                           |   55 B  00:00:00
+(3/7): docker-ce-stable/7/x86_64/filelists_db                                                                                         |  25 kB  00:00:00
+(4/7): extras/7/x86_64/other_db                                                                                                       | 139 kB  00:00:00
+(5/7): docker-ce-stable/7/x86_64/primary_db                                                                                           |  60 kB  00:00:00
+(6/7): docker-ce-stable/7/x86_64/other_db                                                                                             | 118 kB  00:00:00
+(7/7): updates/7/x86_64/other_db                                                                                                      | 610 kB  00:00:00
+Metadata Cache Created
++ '[' -n '' ']'
++ sh -c 'yum install -y -q docker-ce'
+Delta RPMs disabled because /usr/bin/applydeltarpm not installed.
+warning: /var/cache/yum/x86_64/7/docker-ce-stable/packages/containerd.io-1.4.4-3.1.el7.x86_64.rpm: Header V4 RSA/SHA512 Signature, key ID 621e9f35: NOKEY
+Public key for containerd.io-1.4.4-3.1.el7.x86_64.rpm is not installed
+Importing GPG key 0x621E9F35:
+ Userid     : "Docker Release (CE rpm) <docker@docker.com>"
+ Fingerprint: 060a 61c5 1b55 8a7f 742b 77aa c52f eb6b 621e 9f35
+ From       : https://download.docker.com/linux/centos/gpg
++ '[' -n 1 ']'
++ sh -c 'yum install -y -q docker-ce-rootless-extras'
+Package docker-ce-rootless-extras-20.10.6-3.el7.x86_64 already installed and latest version
+
+================================================================================
+
+To run Docker as a non-privileged user, consider setting up the
+Docker daemon in rootless mode for your user:
+
+    dockerd-rootless-setuptool.sh install
+
+Visit https://docs.docker.com/go/rootless/ to learn about rootless mode.
+
+
+To run the Docker daemon as a fully privileged service, but granting non-root
+users access, refer to https://docs.docker.com/go/daemon-access/
+
+WARNING: Access to the remote API on a privileged Docker daemon is equivalent
+         to root access on the host. Refer to the 'Docker daemon attack surface'
+         documentation for details: https://docs.docker.com/go/attack-surface/
+
+================================================================================
+
+[root@localhost ~]# systemctl start docker
+
+[root@localhost ~]# docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+[root@localhost ~]# docker run -p 8080:8080 jenkins
+Unable to find image 'jenkins:latest' locally
+docker: Error response from daemon: manifest for jenkins:latest not found: manifest unknown: manifest unknown.
+See 'docker run --help'.
+
+[root@localhost ~]# docker run jenkins
+Unable to find image 'jenkins:latest' locally
+docker: Error response from daemon: manifest for jenkins:latest not found: manifest unknown: manifest unknown.
+See 'docker run --help'.
+
+[root@localhost ~]# systemctl enable docker
+Created symlink from /etc/systemd/system/multi-user.target.wants/docker.service to /usr/lib/systemd/system/docker.service.
+
+[root@localhost ~]# docker run -p 8080:8080 jenkins
+Unable to find image 'jenkins:latest' locally
+docker: Error response from daemon: manifest for jenkins:latest not found: manifest unknown: manifest unknown.
+See 'docker run --help'.
+
+[root@localhost ~]# systemctl restart docker
+
+[root@localhost ~]# docker run -p 8080:8080 jenkins
+Unable to find image 'jenkins:latest' locally
+docker: Error response from daemon: manifest for jenkins:latest not found: manifest unknown: manifest unknown.
+See 'docker run --help'.
+
+[root@localhost ~]# sudo service --status-all
+netconsole module not loaded
+Configured devices:
+lo enp0s3
+Currently active devices:
+lo enp0s3 enp0s8 enp0s9 docker0
+
+
+[root@localhost ~]# sudo service docker stop
+Redirecting to /bin/systemctl stop docker.service
+Warning: Stopping docker.service, but it can still be activated by:
+  docker.socket
+
+[root@localhost ~]# sudo service --status-all
+netconsole module not loaded
+Configured devices:
+lo enp0s3
+Currently active devices:
+lo enp0s3 enp0s8 enp0s9 docker0
+
+
+[root@localhost ~]# sudo service docker start
+Redirecting to /bin/systemctl start docker.service
+
+
+[root@localhost ~]# docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+[root@localhost ~]# docker run -p 8080:8080 jenkins
+Unable to find image 'jenkins:latest' locally
+docker: Error response from daemon: manifest for jenkins:latest not found: manifest unknown: manifest unknown.
+See 'docker run --help'.
+
+[root@localhost ~]# docker pull registry
+Using default tag: latest
+latest: Pulling from library/registry
+ddad3d7c1e96: Pull complete
+6eda6749503f: Pull complete
+363ab70c2143: Pull complete
+5b94580856e6: Pull complete
+12008541203a: Pull complete
+Digest: sha256:bac2d7050dc4826516650267fe7dc6627e9e11ad653daca0641437abdf18df27
+Status: Downloaded newer image for registry:latest
+docker.io/library/registry:latest
+
+
+[root@localhost ~]# docker run -p 8080:8080 jenkins
+Unable to find image 'jenkins:latest' locally
+docker: Error response from daemon: manifest for jenkins:latest not found: manifest unknown: manifest unknown.
+See 'docker run --help'.
+
+
+
+[root@localhost ~]# docker image list
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+registry     latest    1fd8e1b0bb7e   5 weeks ago   26.2MB
+
+
+[root@localhost ~]# docker pull jenkins
+Using default tag: latest
+Error response from daemon: manifest for jenkins:latest not found: manifest unknown: manifest unknown
+
+
+[root@localhost ~]# docker pull jenkins:2.60.3
+2.60.3: Pulling from library/jenkins
+55cbf04beb70: Pull complete
+1607093a898c: Pull complete
+9a8ea045c926: Pull complete
+d4eee24d4dac: Pull complete
+c58988e753d7: Pull complete
+794a04897db9: Pull complete
+70fcfa476f73: Pull complete
+0539c80a02be: Pull complete
+54fefc6dcf80: Pull complete
+911bc90e47a8: Pull complete
+38430d93efed: Pull complete
+7e46ccda148a: Pull complete
+c0cbcb5ac747: Pull complete
+35ade7a86a8e: Pull complete
+aa433a6a56b1: Pull complete
+841c1dd38d62: Pull complete
+b865dcb08714: Pull complete
+5a3779030005: Pull complete
+12b47c68955c: Pull complete
+1322ea3e7bfd: Pull complete
+Digest: sha256:eeb4850eb65f2d92500e421b430ed1ec58a7ac909e91f518926e02473904f668
+Status: Downloaded newer image for jenkins:2.60.3
+docker.io/library/jenkins:2.60.3
+
+
+[root@localhost ~]# docker image list
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+registry     latest    1fd8e1b0bb7e   5 weeks ago   26.2MB
+jenkins      2.60.3    cd14cecfdb3a   2 years ago   696MB
+
+
+[root@localhost ~]# docker run -p 8080:8080 jenkins
+Unable to find image 'jenkins:latest' locally
+docker: Error response from daemon: manifest for jenkins:latest not found: manifest unknown: manifest unknown.
+See 'docker run --help'.
+
+
+[root@localhost ~]# docker run -p 8080:8080 jenkins:2.60.3
+Running from: /usr/share/jenkins/jenkins.war
+webroot: EnvVars.masterEnvVars.get("JENKINS_HOME")
+May 23, 2021 1:37:27 AM Main deleteWinstoneTempContents
+WARNING: Failed to delete the temporary Winstone file /tmp/winstone/jenkins.war
+May 23, 2021 1:37:27 AM org.eclipse.jetty.util.log.JavaUtilLog info
+INFO: Logging initialized @679ms
+May 23, 2021 1:37:28 AM winstone.Logger logInternal
+INFO: Beginning extraction from war file
+May 23, 2021 1:37:29 AM org.eclipse.jetty.util.log.JavaUtilLog warn
+WARNING: Empty contextPath
+May 23, 2021 1:37:29 AM org.eclipse.jetty.util.log.JavaUtilLog info
+INFO: jetty-9.2.z-SNAPSHOT
+May 23, 2021 1:37:30 AM org.eclipse.jetty.util.log.JavaUtilLog info
+INFO: NO JSP Support for /, did not find org.eclipse.jetty.jsp.JettyJspServlet
+Jenkins home directory: /var/jenkins_home found at: EnvVars.masterEnvVars.get("JENKINS_HOME")
+May 23, 2021 1:37:31 AM org.eclipse.jetty.util.log.JavaUtilLog info
+INFO: Started w.@47404bea{/,file:/var/jenkins_home/war/,AVAILABLE}{/var/jenkins_home/war}
+May 23, 2021 1:37:31 AM org.eclipse.jetty.util.log.JavaUtilLog info
+INFO: Started ServerConnector@1c80e49b{HTTP/1.1}{0.0.0.0:8080}
+May 23, 2021 1:37:31 AM org.eclipse.jetty.util.log.JavaUtilLog info
+INFO: Started @4442ms
+May 23, 2021 1:37:31 AM winstone.Logger logInternal
+INFO: Winstone Servlet Engine v2.0 running: controlPort=disabled
+May 23, 2021 1:37:32 AM jenkins.InitReactorRunner$1 onAttained
+INFO: Started initialization
+May 23, 2021 1:37:32 AM jenkins.InitReactorRunner$1 onAttained
+INFO: Listed all plugins
+May 23, 2021 1:37:35 AM jenkins.InitReactorRunner$1 onAttained
+INFO: Prepared all plugins
+May 23, 2021 1:37:35 AM jenkins.InitReactorRunner$1 onAttained
+INFO: Started all plugins
+May 23, 2021 1:37:35 AM jenkins.InitReactorRunner$1 onAttained
+INFO: Augmented all extensions
+May 23, 2021 1:37:38 AM jenkins.InitReactorRunner$1 onAttained
+INFO: Loaded all jobs
+May 23, 2021 1:37:38 AM hudson.model.AsyncPeriodicWork$1 run
+INFO: Started Download metadata
+May 23, 2021 1:37:39 AM jenkins.util.groovy.GroovyHookScript execute
+INFO: Executing /var/jenkins_home/init.groovy.d/tcp-slave-agent-port.groovy
+May 23, 2021 1:37:39 AM jenkins.InitReactorRunner$1 onAttained
+INFO: Completed initialization
+May 23, 2021 1:37:40 AM org.springframework.context.support.AbstractApplicationContext prepareRefresh
+INFO: Refreshing org.springframework.web.context.support.StaticWebApplicationContext@7158a95d: display name [Root WebApplicationContext]; startup date [Sun May 23 01:37:40 UTC 2021]; root of context hierarchy
+May 23, 2021 1:37:40 AM org.springframework.context.support.AbstractApplicationContext obtainFreshBeanFactory
+INFO: Bean factory for application context [org.springframework.web.context.support.StaticWebApplicationContext@7158a95d]: org.springframework.beans.factory.support.DefaultListableBeanFactory@6b358682
+May 23, 2021 1:37:40 AM org.springframework.beans.factory.support.DefaultListableBeanFactory preInstantiateSingletons
+INFO: Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@6b358682: defining beans [authenticationManager]; root of factory hierarchy
+May 23, 2021 1:37:40 AM org.springframework.context.support.AbstractApplicationContext prepareRefresh
+INFO: Refreshing org.springframework.web.context.support.StaticWebApplicationContext@402a7b76: display name [Root WebApplicationContext]; startup date [Sun May 23 01:37:40 UTC 2021]; root of context hierarchy
+May 23, 2021 1:37:40 AM org.springframework.context.support.AbstractApplicationContext obtainFreshBeanFactory
+INFO: Bean factory for application context [org.springframework.web.context.support.StaticWebApplicationContext@402a7b76]: org.springframework.beans.factory.support.DefaultListableBeanFactory@1ac8baba
+May 23, 2021 1:37:40 AM org.springframework.beans.factory.support.DefaultListableBeanFactory preInstantiateSingletons
+INFO: Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@1ac8baba: defining beans [filter,legacy]; root of factory hierarchy
+May 23, 2021 1:37:41 AM jenkins.install.SetupWizard init
+INFO:
+
+*************************************************************
+*************************************************************
+*************************************************************
+
+Jenkins initial setup is required. An admin user has been created and a password generated.
+Please use the following password to proceed to installation:
+
+e065496b31d042d391fc788b7c57db00
+
+This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
+
+*************************************************************
+*************************************************************
+*************************************************************
+
+--> setting agent port for jnlp
+--> setting agent port for jnlp... done
+
+
+[root@localhost ~]# docker ps -a
+CONTAINER ID   IMAGE            COMMAND                  CREATED         STATUS         PORTS                                                  NAMES
+794bb54da67f   jenkins:2.60.3   "/bin/tini -- /usr/l…"   6 minutes ago   Up 6 minutes   0.0.0.0:8080->8080/tcp, :::8080->8080/tcp, 50000/tcp   modest_davinci
+
+
+[root@localhost ~]# docker stop 794bb54da67f
+794bb54da67f
+
+[root@localhost ~]# docker ps -a
+CONTAINER ID   IMAGE            COMMAND                  CREATED          STATUS                            PORTS                                                  NAMES
+681a6c9d2a77   jenkins:2.60.3   "/bin/tini -- /usr/l…"   40 seconds ago   Up 39 seconds                     0.0.0.0:8080->8080/tcp, :::8080->8080/tcp, 50000/tcp   stupefied_satoshi
+794bb54da67f   jenkins:2.60.3   "/bin/tini -- /usr/l…"   8 minutes ago    Exited (143) About a minute ago                                                          modest_davinci
+
+
+[root@localhost ~]# sudo service jenkins restart
+Redirecting to /bin/systemctl restart jenkins.service
+Failed to restart jenkins.service: Unit not found.
+
+
+[root@localhost ~]# sudo service jenkins restart
+Redirecting to /bin/systemctl restart jenkins.service
+Failed to restart jenkins.service: Unit not found.
+
+Restarted Unbutu machine by init 6 cmd
+
+[root@localhost ~]# docker image list
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+registry     latest    1fd8e1b0bb7e   5 weeks ago   26.2MB
+jenkins      2.60.3    cd14cecfdb3a   2 years ago   696MB
+
+[root@localhost ~]# docker ps -a
+CONTAINER ID   IMAGE            COMMAND                  CREATED          STATUS                            PORTS     NAMES
+681a6c9d2a77   jenkins:2.60.3   "/bin/tini -- /usr/l…"   3 minutes ago    Exited (129) About a minute ago             stupefied_satoshi
+794bb54da67f   jenkins:2.60.3   "/bin/tini -- /usr/l…"   11 minutes ago   Exited (143) 4 minutes ago                  modest_davinci
+
+
+
+[root@localhost ~]# docker run -p 8080:8080 jenkins:2.60.3
+Running from: /usr/share/jenkins/jenkins.war
+webroot: EnvVars.masterEnvVars.get("JENKINS_HOME")
+May 23, 2021 1:49:04 AM Main deleteWinstoneTempContents
+WARNING: Failed to delete the temporary Winstone file /tmp/winstone/jenkins.war
+May 23, 2021 1:49:04 AM org.eclipse.jetty.util.log.JavaUtilLog info
+INFO: Logging initialized @1749ms
+May 23, 2021 1:49:04 AM winstone.Logger logInternal
+INFO: Beginning extraction from war file
+May 23, 2021 1:49:08 AM org.eclipse.jetty.util.log.JavaUtilLog warn
+WARNING: Empty contextPath
+May 23, 2021 1:49:08 AM org.eclipse.jetty.util.log.JavaUtilLog info
+INFO: jetty-9.2.z-SNAPSHOT
+May 23, 2021 1:49:09 AM org.eclipse.jetty.util.log.JavaUtilLog info
+INFO: NO JSP Support for /, did not find org.eclipse.jetty.jsp.JettyJspServlet
+Jenkins home directory: /var/jenkins_home found at: EnvVars.masterEnvVars.get("JENKINS_HOME")
+May 23, 2021 1:49:11 AM org.eclipse.jetty.util.log.JavaUtilLog info
+INFO: Started w.@47404bea{/,file:/var/jenkins_home/war/,AVAILABLE}{/var/jenkins_home/war}
+May 23, 2021 1:49:11 AM org.eclipse.jetty.util.log.JavaUtilLog info
+INFO: Started ServerConnector@1c80e49b{HTTP/1.1}{0.0.0.0:8080}
+May 23, 2021 1:49:11 AM org.eclipse.jetty.util.log.JavaUtilLog info
+INFO: Started @7921ms
+May 23, 2021 1:49:11 AM winstone.Logger logInternal
+INFO: Winstone Servlet Engine v2.0 running: controlPort=disabled
+May 23, 2021 1:49:12 AM jenkins.InitReactorRunner$1 onAttained
+INFO: Started initialization
+May 23, 2021 1:49:12 AM jenkins.InitReactorRunner$1 onAttained
+INFO: Listed all plugins
+May 23, 2021 1:49:14 AM jenkins.InitReactorRunner$1 onAttained
+INFO: Prepared all plugins
+May 23, 2021 1:49:14 AM jenkins.InitReactorRunner$1 onAttained
+INFO: Started all plugins
+May 23, 2021 1:49:14 AM jenkins.InitReactorRunner$1 onAttained
+INFO: Augmented all extensions
+May 23, 2021 1:49:17 AM jenkins.InitReactorRunner$1 onAttained
+INFO: Loaded all jobs
+May 23, 2021 1:49:17 AM hudson.model.AsyncPeriodicWork$1 run
+INFO: Started Download metadata
+May 23, 2021 1:49:18 AM jenkins.util.groovy.GroovyHookScript execute
+INFO: Executing /var/jenkins_home/init.groovy.d/tcp-slave-agent-port.groovy
+May 23, 2021 1:49:18 AM jenkins.InitReactorRunner$1 onAttained
+INFO: Completed initialization
+May 23, 2021 1:49:19 AM org.springframework.context.support.AbstractApplicationContext prepareRefresh
+INFO: Refreshing org.springframework.web.context.support.StaticWebApplicationContext@3775565a: display name [Root WebApplicationContext]; startup date [Sun May 23 01:49:19 UTC 2021]; root of context hierarchy
+May 23, 2021 1:49:19 AM org.springframework.context.support.AbstractApplicationContext obtainFreshBeanFactory
+INFO: Bean factory for application context [org.springframework.web.context.support.StaticWebApplicationContext@3775565a]: org.springframework.beans.factory.support.DefaultListableBeanFactory@7c44545b
+May 23, 2021 1:49:19 AM org.springframework.beans.factory.support.DefaultListableBeanFactory preInstantiateSingletons
+INFO: Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@7c44545b: defining beans [authenticationManager]; root of factory hierarchy
+May 23, 2021 1:49:20 AM org.springframework.context.support.AbstractApplicationContext prepareRefresh
+INFO: Refreshing org.springframework.web.context.support.StaticWebApplicationContext@2d519682: display name [Root WebApplicationContext]; startup date [Sun May 23 01:49:20 UTC 2021]; root of context hierarchy
+May 23, 2021 1:49:20 AM org.springframework.context.support.AbstractApplicationContext obtainFreshBeanFactory
+INFO: Bean factory for application context [org.springframework.web.context.support.StaticWebApplicationContext@2d519682]: org.springframework.beans.factory.support.DefaultListableBeanFactory@369925b9
+May 23, 2021 1:49:20 AM org.springframework.beans.factory.support.DefaultListableBeanFactory preInstantiateSingletons
+INFO: Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@369925b9: defining beans [filter,legacy]; root of factory hierarchy
+May 23, 2021 1:49:20 AM jenkins.install.SetupWizard init
+INFO:
+
+*************************************************************
+*************************************************************
+*************************************************************
+
+Jenkins initial setup is required. An admin user has been created and a password generated.
+Please use the following password to proceed to installation:
+
+2a228432563149638e5a5e951d773962
+
+This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
+
+*************************************************************
+*************************************************************
+*************************************************************
+
+--> setting agent port for jnlp
+--> setting agent port for jnlp... done
+
+
+*************************************************************
+*************************************************************
+deleted jenkins image and all the exited container as well (Issue with that image)
+*************************************************************
+*************************************************************
+
+
+[root@localhost ~]# docker pull jenkins/jenkins
+Using default tag: latest
+latest: Pulling from jenkins/jenkins
+bd8f6a7501cc: Pull complete
+12446dbb5de5: Pull complete
+83885fb2a797: Pull complete
+942ba1a9d199: Pull complete
+1ebc2cf60847: Pull complete
+45d52ff1c4fa: Pull complete
+4f5c0d2cf98d: Pull complete
+59f4f6ab8352: Pull complete
+17181f8b8cda: Pull complete
+6677fc8cdfb6: Pull complete
+18ae90a740b5: Pull complete
+5146be472139: Pull complete
+9f9ae77b30be: Pull complete
+e9788fa4764e: Pull complete
+141e86fba2e5: Pull complete
+d9865f7a9194: Pull complete
+Digest: sha256:7eafcc2583688b6dd6d8f614bbfe5a67c0d2f8b2ee0563364d5b2f310a74c021
+Status: Downloaded newer image for jenkins/jenkins:latest
+docker.io/jenkins/jenkins:latest
+
+
+[root@localhost ~]# docker run -p 8080:8080 jenkins/jenkins
+
+
+[root@localhost ~]# docker ps -a
+CONTAINER ID   IMAGE             COMMAND                  CREATED              STATUS              PORTS                                                  NAMES
+276505611ee1   jenkins/jenkins   "/sbin/tini -- /usr/…"   About a minute ago   Up About a minute   0.0.0.0:8080->8080/tcp, :::8080->8080/tcp, 50000/tcp   strange_kalam
+
+
+
+[root@localhost ~]# docker image list
+REPOSITORY        TAG       IMAGE ID       CREATED       SIZE
+jenkins/jenkins   latest    4e67a113c024   10 days ago   577MB
+registry          latest    1fd8e1b0bb7e   5 weeks ago   26.2MB
+
+
+Jenkins accessible now
+
+needed to save jenkins configuration file on docker host rather than docker container
+
+[root@localhost ~]# docker image list
+REPOSITORY        TAG       IMAGE ID       CREATED       SIZE
+jenkins/jenkins   latest    4e67a113c024   10 days ago   577MB
+registry          latest    1fd8e1b0bb7e   5 weeks ago   26.2MB
+[root@localhost ~]# docker ps -a
+CONTAINER ID   IMAGE             COMMAND                  CREATED          STATUS          PORTS                                                  NAMES
+276505611ee1   jenkins/jenkins   "/sbin/tini -- /usr/…"   54 minutes ago   Up 54 minutes   0.0.0.0:8080->8080/tcp, :::8080->8080/tcp, 50000/tcp   strange_kalam
+[root@localhost ~]# docker inspect 276505611ee1
+[
+    {
+        "Id": "276505611ee1360ce647adb100bd141d129f096dd5065c41e3ef0c4fda9d2332",
+        "Created": "2021-05-23T02:07:27.914015054Z",
+        "Path": "/sbin/tini",
+        "Args": [
+            "--",
+            "/usr/local/bin/jenkins.sh"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 2731,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2021-05-23T02:07:28.370258337Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "Image": "sha256:4e67a113c024b746687e50575e9b74670512540e40ce4738d16b8a421214464b",
+        "ResolvConfPath": "/var/lib/docker/containers/276505611ee1360ce647adb100bd141d129f096dd5065c41e3ef0c4fda9d2332/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/276505611ee1360ce647adb100bd141d129f096dd5065c41e3ef0c4fda9d2332/hostname",
+        "HostsPath": "/var/lib/docker/containers/276505611ee1360ce647adb100bd141d129f096dd5065c41e3ef0c4fda9d2332/hosts",
+        "LogPath": "/var/lib/docker/containers/276505611ee1360ce647adb100bd141d129f096dd5065c41e3ef0c4fda9d2332/276505611ee1360ce647adb100bd141d129f096dd5065c41e3ef0c4fda9d2332-json.log",
+        "Name": "/strange_kalam",
+        "RestartCount": 0,
+        "Driver": "overlay2",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "default",
+            "PortBindings": {
+                "8080/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "8080"
+                    }
+                ]
+            },
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "host",
+            "Dns": [],
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": null,
+            "BlkioDeviceWriteBps": null,
+            "BlkioDeviceReadIOps": null,
+            "BlkioDeviceWriteIOps": null,
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "KernelMemory": 0,
+            "KernelMemoryTCP": 0,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": false,
+            "PidsLimit": null,
+            "Ulimits": null,
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/asound",
+                "/proc/acpi",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/sys/firmware"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/f603d5ecc8d2e92c78e4d0c4721d0599a4c8d304dc0f27262975c01b1bac32cb-init/diff:/var/lib/docker/overlay2/269fe4534deca668e2be7f027213e857f62a3e507411ca51476a4de98a519431/diff:/var/lib/docker/overlay2/cd854b91c70e254fb130104c27e425e84119f5814b58ef0d6d1e94900de74118/diff:/var/lib/docker/overlay2/e6c60577273171a3234818c4fc7b72309791d9fe6f71a2fe55d234d1a097ed98/diff:/var/lib/docker/overlay2/b864df33f37341d7efc3bd70140a0b276e087c3d441cd5ad47832ff1cb8d89c6/diff:/var/lib/docker/overlay2/ba1decc2bbd656779ce1560a6e3218a475f81abd4cdb5a64a943551331920ab3/diff:/var/lib/docker/overlay2/044061e014db9a52711f855f383ec879c587108341021fee2b74e84fb21f77af/diff:/var/lib/docker/overlay2/8ccb78c827e7ce6b4c183a2ab19cbedc9ac0b0d4b9be7bf126a92ddb06ad5d96/diff:/var/lib/docker/overlay2/6ede7dc06bd7027ca5f7715e36f68f84f97fe6311513b9adf41fc3b4e808f900/diff:/var/lib/docker/overlay2/9f7adea45be2dcf46d07f606ec4ab5a8ce78f43ed4b3805bb964ad4043020f61/diff:/var/lib/docker/overlay2/95f84c82114598175aef1040b91f028c4041283ee3c2108be3de07fe5d0cb302/diff:/var/lib/docker/overlay2/3d1c9bf6f7a946a71a6dcccffc87e09064aac736e83905a4d1b1f63097c7bbaa/diff:/var/lib/docker/overlay2/8fafd9506ca948ff23f231758720157b4d49bd708a7ba0ca32b8787f049939c8/diff:/var/lib/docker/overlay2/3413ee472adb281753d95fcadd30e414f4da7847d7a4416c456f103333dd58ba/diff:/var/lib/docker/overlay2/f3af13acfcbea7df0d3cf4ca1591e486bc3e61b591ef144467b969a4f4819de9/diff:/var/lib/docker/overlay2/c8c5729f7629a33841ad8544f5118b9d2ea31745cd1206717df56e4e009d8e41/diff:/var/lib/docker/overlay2/46281fb4eba6c90d196dcc6c80e8d15380ce4adf8fb5b987d853cebe57ce48d0/diff",
+                "MergedDir": "/var/lib/docker/overlay2/f603d5ecc8d2e92c78e4d0c4721d0599a4c8d304dc0f27262975c01b1bac32cb/merged",
+                "UpperDir": "/var/lib/docker/overlay2/f603d5ecc8d2e92c78e4d0c4721d0599a4c8d304dc0f27262975c01b1bac32cb/diff",
+                "WorkDir": "/var/lib/docker/overlay2/f603d5ecc8d2e92c78e4d0c4721d0599a4c8d304dc0f27262975c01b1bac32cb/work"
+            },
+            "Name": "overlay2"
+        },
+        "Mounts": [
+            {
+                "Type": "volume",
+                "Name": "7d6b8086f9b41e8df54536e8591ef14532c24521c2bd682bcb1d0bb80348c3bc",
+                "Source": "/var/lib/docker/volumes/7d6b8086f9b41e8df54536e8591ef14532c24521c2bd682bcb1d0bb80348c3bc/_data",
+                "Destination": "/var/jenkins_home",
+                "Driver": "local",
+                "Mode": "",
+                "RW": true,
+                "Propagation": ""
+            }
+        ],
+        "Config": {
+            "Hostname": "276505611ee1",
+            "Domainname": "",
+            "User": "jenkins",
+            "AttachStdin": false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "ExposedPorts": {
+                "50000/tcp": {},
+                "8080/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "LANG=en_US.UTF-8",
+                "LANGUAGE=en_US:en",
+                "LC_ALL=en_US.UTF-8",
+                "JAVA_VERSION=jdk8u292-b10",
+                "JAVA_HOME=/opt/java/openjdk",
+                "JENKINS_HOME=/var/jenkins_home",
+                "JENKINS_SLAVE_AGENT_PORT=50000",
+                "REF=/usr/share/jenkins/ref",
+                "JENKINS_VERSION=2.293",
+                "JENKINS_UC=https://updates.jenkins.io",
+                "JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental",
+                "JENKINS_INCREMENTALS_REPO_MIRROR=https://repo.jenkins-ci.org/incrementals",
+                "COPY_REFERENCE_FILE_LOG=/var/jenkins_home/copy_reference_file.log"
+            ],
+            "Cmd": null,
+            "Image": "jenkins/jenkins",
+            "Volumes": {
+                "/var/jenkins_home": {}
+            },
+            "WorkingDir": "",
+            "Entrypoint": [
+                "/sbin/tini",
+                "--",
+                "/usr/local/bin/jenkins.sh"
+            ],
+            "OnBuild": null,
+            "Labels": {}
+        },
+        "NetworkSettings": {
+            "Bridge": "",
+            "SandboxID": "de38615b8bd1b7d2d5b7a1dc0bcf4852d86ac0e356190d127ea8642cf1acdacd",
+            "HairpinMode": false,
+            "LinkLocalIPv6Address": "",
+            "LinkLocalIPv6PrefixLen": 0,
+            "Ports": {
+                "50000/tcp": null,
+                "8080/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "8080"
+                    },
+                    {
+                        "HostIp": "::",
+                        "HostPort": "8080"
+                    }
+                ]
+            },
+            "SandboxKey": "/var/run/docker/netns/de38615b8bd1",
+            "SecondaryIPAddresses": null,
+            "SecondaryIPv6Addresses": null,
+            "EndpointID": "abc817f4169321caf01ba35934101de59caa5981d89d3bc211492bb0045c7c26",
+            "Gateway": "172.17.0.1",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "IPAddress": "172.17.0.2",
+            "IPPrefixLen": 16,
+            "IPv6Gateway": "",
+            "MacAddress": "02:42:ac:11:00:02",
+            "Networks": {
+                "bridge": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": null,
+                    "NetworkID": "5d4a30bef80b4ac5020daaf8ae0a3cd417bdaa8fb9869b80a46993a60f7361c4",
+                    "EndpointID": "abc817f4169321caf01ba35934101de59caa5981d89d3bc211492bb0045c7c26",
+                    "Gateway": "172.17.0.1",
+                    "IPAddress": "172.17.0.2",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "MacAddress": "02:42:ac:11:00:02",
+                    "DriverOpts": null
+                }
+            }
+        }
+    }
+]
+[root@localhost ~]# docker commit 276505611ee1 myJenkins
+invalid reference format: repository name must be lowercase
+[root@localhost ~]# docker commit 276505611ee1 jenkinstest
+sha256:28286d546835607ffb44dd7e2c861f0d8af2b55e008fd2c0c2b9fc442db243a3
+[root@localhost ~]# mkdir jenkins_config
+[root@localhost ~]# pwd
+/root
+[root@localhost ~]# docker run -ti -v "/root/jenkins_config":/var/jenkins_home jenkinstest /sbin/tini
+touch: cannot touch '/var/jenkins_home/copy_reference_file.log': Permission denied
+Can not write to /var/jenkins_home/copy_reference_file.log. Wrong volume permissions?
+[root@localhost ~]# docker run -ti -v "/root/jenkins_config":/var/jenkins_home jenkinstest -u root /sbin/tini
+touch: cannot touch '/var/jenkins_home/copy_reference_file.log': Permission denied
+Can not write to /var/jenkins_home/copy_reference_file.log. Wrong volume permissions?
+[root@localhost ~]# docker run -ti -v /root/jenkins_config:/var/jenkins_home jenkinstest /sbin/tini
+touch: cannot touch '/var/jenkins_home/copy_reference_file.log': Permission denied
+Can not write to /var/jenkins_home/copy_reference_file.log. Wrong volume permissions?
+[root@localhost ~]# docker run -ti -v /root/jenkins_config:/var/jenkins_home jenkinstest -u root /sbin/tini
+touch: cannot touch '/var/jenkins_home/copy_reference_file.log': Permission denied
+Can not write to /var/jenkins_home/copy_reference_file.log. Wrong volume permissions?
+[root@localhost ~]# sudo chown -R 1000:1000 /root/jenkins_config/
+
+
+[root@localhost ~]# docker commit 276505611ee1 myJenkins
+invalid reference format: repository name must be lowercase
+[root@localhost ~]# docker commit 276505611ee1 jenkinstest
+sha256:28286d546835607ffb44dd7e2c861f0d8af2b55e008fd2c0c2b9fc442db243a3
+[root@localhost ~]# mkdir jenkins_config
+[root@localhost ~]# pwd
+/root
+[root@localhost ~]# docker run -ti -v "/root/jenkins_config":/var/jenkins_home jenkinstest /sbin/tini
+touch: cannot touch '/var/jenkins_home/copy_reference_file.log': Permission denied
+Can not write to /var/jenkins_home/copy_reference_file.log. Wrong volume permissions?
+[root@localhost ~]# docker run -ti -v "/root/jenkins_config":/var/jenkins_home jenkinstest -u root /sbin/tini
+touch: cannot touch '/var/jenkins_home/copy_reference_file.log': Permission denied
+Can not write to /var/jenkins_home/copy_reference_file.log. Wrong volume permissions?
+[root@localhost ~]# docker run -ti -v /root/jenkins_config:/var/jenkins_home jenkinstest /sbin/tini
+touch: cannot touch '/var/jenkins_home/copy_reference_file.log': Permission denied
+Can not write to /var/jenkins_home/copy_reference_file.log. Wrong volume permissions?
+[root@localhost ~]# docker run -ti -v /root/jenkins_config:/var/jenkins_home jenkinstest -u root /sbin/tini
+touch: cannot touch '/var/jenkins_home/copy_reference_file.log': Permission denied
+Can not write to /var/jenkins_home/copy_reference_file.log. Wrong volume permissions?
+[root@localhost ~]# sudo chown -R 1000:1000 /root/jenkins_config/
+[root@localhost ~]# docker run -ti -v /root/jenkins_config:/var/jenkins_home jenkinstest /sbin/tini
+tini (tini version 0.16.1 - git.0effd37)
+Usage: tini [OPTIONS] PROGRAM -- [ARGS] | --version
+
+Execute a program under the supervision of a valid init process (tini)
+
+Command line options:
+
+  --version: Show version and exit.
+  -h: Show this help message and exit.
+  -s: Register as a process subreaper (requires Linux >= 3.4).
+  -v: Generate more verbose output. Repeat up to 3 times.
+  -g: Send signals to the child's process group.
+  -l: Show license and exit.
+
+Environment variables:
+
+  TINI_SUBREAPER: Register as a process subreaper (requires Linux >= 3.4)
+  TINI_VERBOSITY: Set the verbosity level (default: 1)
+
+[root@localhost ~]# docker run -ti -v /root/jenkins_config:/var/jenkins_home jenkinstest --entrypoint entrypoint.sh
+Running from: /usr/share/jenkins/jenkins.war
+webroot: EnvVars.masterEnvVars.get("JENKINS_HOME")
+Exception in thread "main" java.lang.reflect.InvocationTargetException
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at Main._main(Main.java:375)
+        at Main.main(Main.java:151)
+Caused by: java.lang.IllegalArgumentException: Unrecognized option: --entrypoint
+        at winstone.cmdline.CmdLineParser.parse(CmdLineParser.java:52)
+        at winstone.Launcher.getArgsFromCommandLine(Launcher.java:378)
+        at winstone.Launcher.main(Launcher.java:349)
+        ... 6 more
+[root@localhost ~]# docker run -ti -v /root/jenkins_config:/var/jenkins_home jenkinstest --entrypoint /usr/local/bin/jenkins.sh
+Running from: /usr/share/jenkins/jenkins.war
+webroot: EnvVars.masterEnvVars.get("JENKINS_HOME")
+Exception in thread "main" java.lang.reflect.InvocationTargetException
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at Main._main(Main.java:375)
+        at Main.main(Main.java:151)
+Caused by: java.lang.IllegalArgumentException: Unrecognized option: --entrypoint
+        at winstone.cmdline.CmdLineParser.parse(CmdLineParser.java:52)
+        at winstone.Launcher.getArgsFromCommandLine(Launcher.java:378)
+        at winstone.Launcher.main(Launcher.java:349)
+        ... 6 more
+
+
+[root@localhost ~]# docker ps
+CONTAINER ID   IMAGE             COMMAND                  CREATED             STATUS             PORTS                                                  NAMES
+276505611ee1   jenkins/jenkins   "/sbin/tini -- /usr/…"   About an hour ago   Up About an hour   0.0.0.0:8080->8080/tcp, :::8080->8080/tcp, 50000/tcp   strange_kalam
+
+
+
+
+[root@localhost ~]# docker run -ti -v /root/jenkins_config:/var/jenkins_home jenkinstest --entrypoint tini
+Running from: /usr/share/jenkins/jenkins.war
+webroot: EnvVars.masterEnvVars.get("JENKINS_HOME")
+Exception in thread "main" java.lang.reflect.InvocationTargetException
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at Main._main(Main.java:375)
+        at Main.main(Main.java:151)
+Caused by: java.lang.IllegalArgumentException: Unrecognized option: --entrypoint
+        at winstone.cmdline.CmdLineParser.parse(CmdLineParser.java:52)
+        at winstone.Launcher.getArgsFromCommandLine(Launcher.java:378)
+        at winstone.Launcher.main(Launcher.java:349)
+        ... 6 more
+
+
+[root@localhost ~]# docker ps
+CONTAINER ID   IMAGE             COMMAND                  CREATED             STATUS             PORTS                                                  NAMES
+276505611ee1   jenkins/jenkins   "/sbin/tini -- /usr/…"   About an hour ago   Up About an hour   0.0.0.0:8080->8080/tcp, :::8080->8080/tcp, 50000/tcp   strange_kalam
+
+[root@localhost ~]# docker run -p 8080:8080 -ti -v /root/jenkins_config:/var/jenkins_home jenkinstest
+
+Running from: /usr/share/jenkins/jenkins.war
+webroot: EnvVars.masterEnvVars.get("JENKINS_HOME")
+2021-05-23 03:31:08.673+0000 [id=1]     INFO    org.eclipse.jetty.util.log.Log#initialized: Logging initialized @777ms to org.eclipse.jetty.util.log.JavaUtilLog
+2021-05-23 03:31:08.914+0000 [id=1]     INFO    winstone.Logger#logInternal: Beginning extraction from war file
+2021-05-23 03:31:11.202+0000 [id=1]     WARNING o.e.j.s.handler.ContextHandler#setContextPath: Empty contextPath
+2021-05-23 03:31:11.320+0000 [id=1]     INFO    org.eclipse.jetty.server.Server#doStart: jetty-9.4.40.v20210413; built: 2021-04-13T20:42:42.668Z; git: b881a572662e1943a14ae12e7e1207989f218b74; jvm 1.8.0_292-b10
+2021-05-23 03:31:11.938+0000 [id=1]     INFO    o.e.j.w.StandardDescriptorProcessor#visitServlet: NO JSP Support for /, did not find org.eclipse.jetty.jsp.JettyJspServlet
+2021-05-23 03:31:12.045+0000 [id=1]     INFO    o.e.j.s.s.DefaultSessionIdManager#doStart: DefaultSessionIdManager workerName=node0
+2021-05-23 03:31:12.045+0000 [id=1]     INFO    o.e.j.s.s.DefaultSessionIdManager#doStart: No SessionScavenger set, using defaults
+2021-05-23 03:31:12.046+0000 [id=1]     INFO    o.e.j.server.session.HouseKeeper#startScavenging: node0 Scavenging every 660000ms
+2021-05-23 03:31:13.112+0000 [id=1]     INFO    hudson.WebAppMain#contextInitialized: Jenkins home directory: /var/jenkins_home found at: EnvVars.masterEnvVars.get("JENKINS_HOME")
+2021-05-23 03:31:13.535+0000 [id=1]     INFO    o.e.j.s.handler.ContextHandler#doStart: Started w.@41200e0c{Jenkins v2.293,/,file:///var/jenkins_home/war/,AVAILABLE}{/var/jenkins_home/war}
+2021-05-23 03:31:13.600+0000 [id=1]     INFO    o.e.j.server.AbstractConnector#doStart: Started ServerConnector@2657d4dd{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2021-05-23 03:31:13.601+0000 [id=1]     INFO    org.eclipse.jetty.server.Server#doStart: Started @5706ms
+2021-05-23 03:31:13.618+0000 [id=21]    INFO    winstone.Logger#logInternal: Winstone Servlet Engine running: controlPort=disabled
+2021-05-23 03:31:15.614+0000 [id=26]    INFO    jenkins.InitReactorRunner$1#onAttained: Started initialization
+2021-05-23 03:31:15.690+0000 [id=27]    INFO    jenkins.InitReactorRunner$1#onAttained: Listed all plugins
+2021-05-23 03:31:18.740+0000 [id=26]    INFO    jenkins.InitReactorRunner$1#onAttained: Prepared all plugins
+2021-05-23 03:31:18.762+0000 [id=26]    INFO    jenkins.InitReactorRunner$1#onAttained: Started all plugins
+2021-05-23 03:31:18.792+0000 [id=27]    INFO    jenkins.InitReactorRunner$1#onAttained: Augmented all extensions
+2021-05-23 03:31:22.126+0000 [id=27]    INFO    jenkins.InitReactorRunner$1#onAttained: System config loaded
+2021-05-23 03:31:22.126+0000 [id=27]    INFO    jenkins.InitReactorRunner$1#onAttained: System config adapted
+2021-05-23 03:31:22.127+0000 [id=27]    INFO    jenkins.InitReactorRunner$1#onAttained: Loaded all jobs
+2021-05-23 03:31:22.127+0000 [id=27]    INFO    jenkins.InitReactorRunner$1#onAttained: Configuration for all jobs updated
+2021-05-23 03:31:23.143+0000 [id=40]    INFO    hudson.model.AsyncPeriodicWork#lambda$doRun$0: Started Download metadata
+2021-05-23 03:31:23.149+0000 [id=40]    INFO    hudson.util.Retrier#start: Attempt #1 to do the action check updates server
+2021-05-23 03:31:23.566+0000 [id=27]    INFO    jenkins.install.SetupWizard#init:
+
+*************************************************************
+*************************************************************
+*************************************************************
+
+Jenkins initial setup is required. An admin user has been created and a password generated.
+Please use the following password to proceed to installation:
+
+970523ade8304fb3aed2112585f7c89b
+
+This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
+
+*************************************************************
+*************************************************************
+*************************************************************
+
+
+
+installed all again with persistance volume 
+
+[root@localhost ~]# docker run -p 8080:8080 -v /root/jenkins_config:/var/jenkins_home -u root jenkins/jenkins
+
+Running from: /usr/share/jenkins/jenkins.war
+webroot: EnvVars.masterEnvVars.get("JENKINS_HOME")
+2021-05-23 03:40:26.536+0000 [id=1]     INFO    org.eclipse.jetty.util.log.Log#initialized: Logging initialized @732ms to org.eclipse.jetty.util.log.JavaUtilLog
+2021-05-23 03:40:26.751+0000 [id=1]     INFO    winstone.Logger#logInternal: Beginning extraction from war file
+2021-05-23 03:40:26.797+0000 [id=1]     WARNING o.e.j.s.handler.ContextHandler#setContextPath: Empty contextPath
+2021-05-23 03:40:26.910+0000 [id=1]     INFO    org.eclipse.jetty.server.Server#doStart: jetty-9.4.40.v20210413; built: 2021-04-13T20:42:42.668Z; git: b881a572662e1943a14ae12e7e1207989f218b74; jvm 1.8.0_292-b10
+2021-05-23 03:40:27.456+0000 [id=1]     INFO    o.e.j.w.StandardDescriptorProcessor#visitServlet: NO JSP Support for /, did not find org.eclipse.jetty.jsp.JettyJspServlet
+2021-05-23 03:40:27.538+0000 [id=1]     INFO    o.e.j.s.s.DefaultSessionIdManager#doStart: DefaultSessionIdManager workerName=node0
+2021-05-23 03:40:27.538+0000 [id=1]     INFO    o.e.j.s.s.DefaultSessionIdManager#doStart: No SessionScavenger set, using defaults
+2021-05-23 03:40:27.539+0000 [id=1]     INFO    o.e.j.server.session.HouseKeeper#startScavenging: node0 Scavenging every 660000ms
+2021-05-23 03:40:28.476+0000 [id=1]     INFO    hudson.WebAppMain#contextInitialized: Jenkins home directory: /var/jenkins_home found at: EnvVars.masterEnvVars.get("JENKINS_HOME")
+2021-05-23 03:40:28.842+0000 [id=1]     INFO    o.e.j.s.handler.ContextHandler#doStart: Started w.@1890516e{Jenkins v2.293,/,file:///var/jenkins_home/war/,AVAILABLE}{/var/jenkins_home/war}
+2021-05-23 03:40:28.867+0000 [id=1]     INFO    o.e.j.server.AbstractConnector#doStart: Started ServerConnector@67b6d4ae{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2021-05-23 03:40:28.868+0000 [id=1]     INFO    org.eclipse.jetty.server.Server#doStart: Started @3064ms
+2021-05-23 03:40:28.901+0000 [id=21]    INFO    winstone.Logger#logInternal: Winstone Servlet Engine running: controlPort=disabled
+2021-05-23 03:40:28.842+0000 [id=1]     INFO    o.e.j.s.handler.ContextHandler#doStart: Started w.@1890516e{Jenkins v2.293,/,file:///var/jenkins_home/war/,AVAILABLE}{/var/jenkins_home/war}
+2021-05-23 03:40:28.867+0000 [id=1]     INFO    o.e.j.server.AbstractConnector#doStart: Started ServerConnector@67b6d4ae{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2021-05-23 03:40:28.868+0000 [id=1]     INFO    org.eclipse.jetty.server.Server#doStart: Started @3064ms
+2021-05-23 03:40:28.901+0000 [id=21]    INFO    winstone.Logger#logInternal: Winstone Servlet Engine running: controlPort=disabled
+2021-05-23 03:40:30.840+0000 [id=26]    INFO    jenkins.InitReactorRunner$1#onAttained: Started initialization
+2021-05-23 03:40:30.933+0000 [id=27]    INFO    jenkins.InitReactorRunner$1#onAttained: Listed all plugins
+2021-05-23 03:40:33.807+0000 [id=26]    INFO    jenkins.InitReactorRunner$1#onAttained: Prepared all plugins
+2021-05-23 03:40:33.811+0000 [id=26]    INFO    jenkins.InitReactorRunner$1#onAttained: Started all plugins
+2021-05-23 03:40:33.897+0000 [id=27]    INFO    jenkins.InitReactorRunner$1#onAttained: Augmented all extensions
+2021-05-23 03:40:34.540+0000 [id=27]    INFO    jenkins.InitReactorRunner$1#onAttained: System config loaded
+2021-05-23 03:40:34.540+0000 [id=27]    INFO    jenkins.InitReactorRunner$1#onAttained: System config adapted
+2021-05-23 03:40:34.541+0000 [id=27]    INFO    jenkins.InitReactorRunner$1#onAttained: Loaded all jobs
+2021-05-23 03:40:34.541+0000 [id=27]    INFO    jenkins.InitReactorRunner$1#onAttained: Configuration for all jobs updated
+2021-05-23 03:40:34.857+0000 [id=27]    INFO    jenkins.install.SetupWizard#init:
+
+*************************************************************
+*************************************************************
+*************************************************************
+
+Jenkins initial setup is required. An admin user has been created and a password generated.
+Please use the following password to proceed to installation:
+
+970523ade8304fb3aed2112585f7c89b
+
+This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
+
+*************************************************************
+*************************************************************
+*************************************************************
+
+2021-05-23 03:40:35.375+0000 [id=40]    INFO    hudson.model.AsyncPeriodicWork#lambda$doRun$0: Started Download metadata
+2021-05-23 03:40:35.380+0000 [id=40]    INFO    hudson.model.AsyncPeriodicWork#lambda$doRun$0: Finished Download metadata. 1 ms
+2021-05-23 03:40:51.186+0000 [id=27]    INFO    jenkins.InitReactorRunner$1#onAttained: Completed initialization
+2021-05-23 03:40:51.455+0000 [id=20]    INFO    hudson.WebAppMain$3#run: Jenkins is fully up and running
+
+
+-------------------
+
+[root@localhost jenkins_config]# ls -ltr
+total 40
+drwxr-xr-x. 11 1000 1000 4096 May 23 09:01 war
+-rw-r--r--.  1 1000 1000   64 May 23 09:01 secret.key
+-rw-r--r--.  1 1000 1000    0 May 23 09:01 secret.key.not-so-secret
+drwxr-xr-x.  2 1000 1000    6 May 23 09:01 jobs
+-rw-------.  1 1000 1000 1712 May 23 09:01 identity.key.enc
+-rw-r--r--.  1 1000 1000  171 May 23 09:01 jenkins.telemetry.Correlator.xml
+drwxr-xr-x.  2 1000 1000    6 May 23 09:01 nodes
+drwxr-xr-x.  2 1000 1000   24 May 23 09:01 userContent
+drwxr-xr-x.  3 1000 1000   19 May 23 09:01 logs
+drwxr-xr-x.  3 1000 1000   56 May 23 09:01 users
+drwx------.  4 1000 1000  265 May 23 09:01 secrets
+-rw-r--r--.  1 1000 1000  129 May 23 09:09 queue.xml.bak
+-rw-r--r--.  1 1000 1000  530 May 23 09:10 copy_reference_file.log
+-rw-r--r--.  1 root root  156 May 23 09:10 hudson.model.UpdateCenter.xml
+-rw-r--r--.  1 root root  907 May 23 09:10 nodeMonitors.xml
+drwxr-xr-x.  2 1000 1000   67 May 23 09:10 updates
+-rw-r--r--.  1 root root 1598 May 23 09:10 config.xml
+drwxr-xr-x.  8 1000 1000  269 May 23 09:12 plugins
+-rw-r--r--.  1 1000 1000 1611 May 23 09:12 jenkins.install.InstallUtil.installingPlugins
+
+
+
+[root@localhost jenkins_config]# docker ps
+CONTAINER ID   IMAGE             COMMAND                  CREATED         STATUS         PORTS                                                  NAMES
+8ad506475176   jenkins/jenkins   "/sbin/tini -- /usr/…"   2 minutes ago   Up 2 minutes   0.0.0.0:8080->8080/tcp, :::8080->8080/tcp, 50000/tcp   elegant_chandrasekhar
+
+
+
+[root@localhost jenkins_config]#
+
+
